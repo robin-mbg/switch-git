@@ -1,16 +1,46 @@
 # Switch Git Plugin for oh-my-zsh
 #
-# Easily navigate through repositories and branches on your machine
+# Easily navigate through repositories and branches on your machine using
+# switch_git_repository and switch_git_branch.
+#
+# Requirements: fzf
 
 alias sgr="switch_git_repository"
 alias sgb="switch_git_branch"
+alias sgl="switch_git_list"
+
+SWITCH_GIT_BASE_PATH=~
+
+function switch_git_list_directories() {
+    find $SWITCH_GIT_BASE_PATH -name .git -exec dirname {} \; -prune | grep -v "$HOME/.vim" 
+}
+
+function switch_git_list() {
+    switch_git_list_directories | sed 's!.*/!!' | sort | uniq 
+}
 
 function switch_git_repository() {
+    origin_directory=$(pwd)
+
     if [ -z "$1" ]
     then
-        cd $(find ~ -name .git -exec dirname {} \; -prune | fzf --prompt="Repo name > ")
+        switch_git_repository $(switch_git_list | fzf)
     else
-        cd $(find ~ -name .git -exec dirname {} \; -prune | grep $1 | sort -s | head -1)
+        repo=$(switch_git_list_directories | grep $1 | sort -s | head -1)
+        if [ -z "$repo" ]
+        then
+            echo "Could not find repository related to $(tput setaf 226)$1"
+        else
+            cd $repo
+
+            # If additional arguments are supplied, run these through git in the destination repository and return
+            if [[ ! -z "$2" ]]
+                # If additional arguments are supplied, run these through git in the destination repository and return
+            then
+                git "${@:2}"    
+                cd $origin_directory
+            fi
+        fi
     fi
 }
 
@@ -22,3 +52,13 @@ function switch_git_branch() {
   git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
 }
 
+function _switch_git_repository {
+    local line
+
+    reponames=$(switch_git_list)
+    _arguments -C \
+        "1: :($reponames)" \
+        "*::arg:->args"
+}
+
+compdef _switch_git_repository switch_git_repository
