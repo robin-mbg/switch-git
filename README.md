@@ -1,5 +1,5 @@
 # switch-git
-oh-my-zsh plugin for easy switching between git repositories
+oh-my-zsh plugin for easy switching between git repositories. Just type `sgr <some part of you repo's name>`, press enter and you're there. For additional features, see below.
 
 ## oh-my-zsh installation
 
@@ -17,6 +17,8 @@ plugins(
     ...
     switch-git)
 ```
+
+To update the plugin, you can use the `sgu` (switch_git_update) command. This pulls the most recent version from git.
 
 ## Usage
 

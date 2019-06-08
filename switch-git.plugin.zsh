@@ -8,9 +8,13 @@
 alias sgr="switch_git_repository"
 alias sgb="switch_git_branch"
 alias sgl="switch_git_list"
+alias sgu="switch_git_update"
 
 SWITCH_GIT_BASE_PATH=~
 
+function switch_git_update() {
+    switch_git_repository switch-git pull
+}
 function switch_git_list_directories() {
     find $SWITCH_GIT_BASE_PATH -name .git -exec dirname {} \; -prune | grep -v "$HOME/.vim" 
 }
@@ -35,9 +39,14 @@ function switch_git_repository() {
 
             # If additional arguments are supplied, run these through git in the destination repository and return
             if [[ ! -z "$2" ]]
-                # If additional arguments are supplied, run these through git in the destination repository and return
             then
-                git "${@:2}"    
+                if [ -x "$(command -v tgit.sh)" ]
+                then
+                    tgit.sh "${@:2}"
+                else
+                    git "${@:2}"    
+                fi
+
                 cd $origin_directory
             fi
         fi
