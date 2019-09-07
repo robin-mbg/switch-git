@@ -37,4 +37,4 @@ The following command, for example, goes to the switch-git repository, executes 
 sgr switch pull --rebase
 ```
 ### Switch git branch
-The `sgb` command calls on an `fzf`-provided interface to select and check out a git branch. 
+The `sgb` command calls on an `fzf`-provided interface to select and check out a git branch. Instead of using the fuzzy finder, you can also directly add add a search string. E.g. calling `sgb feature` will lead to a switch to the latest-used feature branch. 

@@ -17,7 +17,7 @@ function switch_git_update() {
 }
 
 function switch_git_list_directories() {
-    find $SWITCH_GIT_BASE_PATH -name .git -exec dirname {} \; -prune 2>&1 | grep -v "Permission denied"
+    find $SWITCH_GIT_BASE_PATH -name .git -exec dirname {} \; -prune 2>&1 | grep -v "Permission denied" | grep -v "Keine Berechtigung"
 }
 
 function switch_git_list() {
@@ -56,10 +56,18 @@ function switch_git_repository() {
 
 function switch_git_branch() {
   local branches branch
+
   branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)") &&
-  branch=$(echo "$branches" |
+
+  if [ -z "$1" ]
+  then
+    branch=$(echo "$branches" |
            fzf-tmux -d $(( 2 + $(wc -l <<< "$branches") )) +m) &&
-  git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+    git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+  else
+    branch=$(echo "$branches" | grep $1 | sort -s | head -1)
+    git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+  fi
 }
 
 ## tab auto-completion
