@@ -10,17 +10,18 @@ alias sgb="switch_git_branch"
 alias sgl="switch_git_list"
 alias sgu="switch_git_update"
 
-SWITCH_GIT_BASE_PATH=~
+SWITCH_GIT_BASE_PATH=$HOME
 
 function switch_git_update() {
     switch_git_repository switch-git pull
 }
+
 function switch_git_list_directories() {
-    find $SWITCH_GIT_BASE_PATH -name .git -exec dirname {} \; -prune | grep -v "$HOME/.vim" 
+    find $SWITCH_GIT_BASE_PATH -name .git -exec dirname {} \; -prune 2>&1 | grep -v "Permission denied"
 }
 
 function switch_git_list() {
-    switch_git_list_directories | sed 's!.*/!!' | sort | uniq 
+    switch_git_list_directories | sed 's!.*/!!' | sort | uniq
 }
 
 function switch_git_repository() {
@@ -60,6 +61,8 @@ function switch_git_branch() {
            fzf-tmux -d $(( 2 + $(wc -l <<< "$branches") )) +m) &&
   git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
 }
+
+## tab auto-completion
 
 function _switch_git_repository {
     local line
