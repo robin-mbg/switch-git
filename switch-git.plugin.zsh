@@ -44,7 +44,7 @@ function switch_git_repository() {
                 then
                     tgit.sh "${@:2}"
                 else
-                    git "${@:2}"    
+                    git "${@:2}"
                 fi
 
                 cd $origin_directory
@@ -70,4 +70,14 @@ function _switch_git_repository {
         "*::arg:->args"
 }
 
+function _switch_git_branch() {
+    local line
+
+    reponames=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)")
+    _arguments -C \
+        "1: :($reponames)" \
+        "*::arg:->args"
+}
+
 compdef _switch_git_repository switch_git_repository
+compdef _switch_git_branch switch_git_branch
