@@ -17,7 +17,11 @@ function switch_git_update() {
 }
 
 function switch_git_list_directories() {
-    find $SWITCH_GIT_BASE_PATH -name .git -exec dirname {} \; -prune 2>&1 | grep -v "Permission denied" | grep -v "Keine Berechtigung"
+    if type "$may" > /dev/null; then
+        find $SWITCH_GIT_BASE_PATH -name .git -exec dirname {} \; -prune 2>&1 | grep -v "Permission denied" | grep -v "Keine Berechtigung"
+    else 
+        may
+    fi
 }
 
 function switch_git_list() {
